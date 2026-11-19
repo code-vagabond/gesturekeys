@@ -3,8 +3,8 @@
 Small launchd daemon that turns trackpad / Magic Mouse gestures into keyboard shortcuts
 (a BetterTouchTool replacement for the few gestures I actually use).
 
-> **Early / build-it-yourself.** No signed download yet — you build from source with your own
-> signing certificate (see Install). Tested on a built-in trackpad on macOS 26 only.
+> **Early / build-it-yourself.** No signed download yet — you build from source and sign it
+> ad hoc, no certificate needed (see Install). Tested on a built-in trackpad on macOS 26 only.
 
 | Gesture | Default |
 |---|---|
@@ -35,18 +35,24 @@ three-finger-click = cmd+w
 
 ## Install
 
-- `./install.sh` builds `GestureKeys.app`, signs it, loads the launchd agent and links the CLI to `~/.local/bin/gesturekeys`
-  (`DEBUG=1 ./install.sh` for verbose logs, `CODESIGN_IDENTITY=...` to pick a certificate)
-- Grant Accessibility once: System Settings → Privacy & Security → Accessibility → add `GestureKeys.app`
-- Logs: `tail -f ~/Library/Logs/gesturekeys.log`
+1. `./install.sh` builds `GestureKeys.app`, signs it **ad hoc** (no certificate needed), loads the launchd
+   agent so it starts at login, and links the CLI to `~/.local/bin/gesturekeys`
+   (`DEBUG=1 ./install.sh` for verbose logs)
+2. Grant Accessibility once: System Settings → Privacy & Security → **Accessibility** → **+** → add
+   `GestureKeys.app` (or drag it in) and switch it on. On macOS 27 this pane may be called
+   **Device Control and Data Access**. It is *not* the general "Accessibility" item in the sidebar.
+3. Check it: `tail -f ~/Library/Logs/gesturekeys.log` should show `gesturekeys running`.
+
+- **After rebuilding:** an ad-hoc signature changes every build and macOS drops the Accessibility grant.
+  Switch `GestureKeys` off and on again in that list (or remove and re-add it).
 - Uninstall: `launchctl bootout gui/$(id -u)/com.linh.gesturekeys; rm ~/Library/LaunchAgents/com.linh.gesturekeys.plist ~/.local/bin/gesturekeys`
 
 ## Requirements
 
 - macOS with Xcode command line tools (`xcode-select --install`)
-- A code-signing certificate. Ad-hoc signatures change on every build and macOS drops the Accessibility
-  grant each time. A free Apple ID "Apple Development" cert (via Xcode) or a self-signed
-  "Code Signing" cert from Keychain Access both work: `CODESIGN_IDENTITY="My Cert" ./install.sh`
+- Optional: a code-signing certificate, so the Accessibility grant survives rebuilds. A free Apple ID
+  "Apple Development" cert (via Xcode) or a self-signed "Code Signing" cert from Keychain Access both
+  work: `CODESIGN_IDENTITY="My Cert" ./install.sh`
 
 ## Known limitations
 

@@ -25,12 +25,13 @@ cat > "$APP/Contents/Info.plist" <<EOF
 </dict>
 </plist>
 EOF
-# Sign with a real identity so the Accessibility grant survives rebuilds
-# (ad-hoc signatures change on every build and macOS drops the grant).
-IDENTITY="${CODESIGN_IDENTITY:-Apple Development}"
-if ! security find-identity -v -p codesigning | grep -qF "$IDENTITY"; then
+# Default: ad-hoc signature ("-"), no certificate needed. The catch: it changes on every
+# build, so macOS drops the Accessibility grant after a rebuild (toggle it off/on again).
+# Set CODESIGN_IDENTITY="<cert name>" to sign with a real certificate and keep the grant.
+IDENTITY="${CODESIGN_IDENTITY:--}"
+if [ "$IDENTITY" != "-" ] && ! security find-identity -v -p codesigning | grep -qF "$IDENTITY"; then
   echo "No code-signing certificate matching '$IDENTITY'." >&2
-  echo "Create one (see README → Requirements), then run: CODESIGN_IDENTITY=\"<name>\" ./install.sh" >&2
+  echo "Unset CODESIGN_IDENTITY to sign ad hoc, or create one (see README → Requirements)." >&2
   exit 1
 fi
 codesign --force --sign "$IDENTITY" --identifier "$LABEL" "$APP"
