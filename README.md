@@ -1,7 +1,8 @@
-# gesturekeys
+# gesturekeys — free, open-source BetterTouchTool alternative for macOS trackpad gestures
 
 Small launchd daemon that turns trackpad / Magic Mouse gestures into keyboard shortcuts
-(a BetterTouchTool replacement for the few gestures I actually use).
+(TipTap, three-finger click and more). A lightweight, free **alternative to BetterTouchTool**
+for the few gestures you actually use: no subscription or license, no GUI, just a text config.
 
 > **Early / build-it-yourself.** No signed download yet — you build from source and sign it
 > ad hoc, no certificate needed (see Install). Tested on a built-in trackpad on macOS 26 only.
